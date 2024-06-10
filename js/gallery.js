@@ -63,3 +63,42 @@ const images = [
     description: 'Lighthouse Coast Sea',
   },
 ];
+/**  Масив images містить об’єкти із даними для галереї.
+Вибираємо контейнер галереї ul.gallery.
+За допомогою методу map створюємо розмітку для кожного зображення та об'єднуємо все в одну строку.
+Вставляємо створену розмітку у контейнер галереї.
+Додаємо прослуховувач подій на контейнер галереї, щоб використати делегування подій.
+При кліку перевіряємо, чи був натиснутий елемент <img>, запобігаємо поведінці за замовчуванням (відкриття посилання) 
+та відкриваємо модальне вікно із великим зображенням.*/
+
+const galleryContainer = document.querySelector('.gallery');
+
+const galleryMarkup = images.map(({ preview, original, description }) => {
+  return `
+    <li class="gallery-item">
+      <a class="gallery-link" href="${original}">
+        <img
+          class="gallery-image"
+          src="${preview}"
+          data-source="${original}"
+          alt="${description}"
+        />
+      </a>
+    </li>
+  `;
+}).join('');
+
+galleryContainer.innerHTML = galleryMarkup;
+
+galleryContainer.addEventListener('click', (event) => {
+  event.preventDefault();
+
+  const target = event.target;
+  if (target.nodeName !== 'IMG') return;
+
+  const largeImageURL = target.dataset.source;
+  const instance = basicLightbox.create(`
+    <img src="${largeImageURL}" width="1112" height="640">
+  `);
+  instance.show();
+});
